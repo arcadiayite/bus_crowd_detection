@@ -6,6 +6,8 @@
 *.log
 *.pptx
 *.docx
+*.xlsx
+*.xls
 *.json
 
 # 模型文件
