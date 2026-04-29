@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-测试抓取摄像头数据并进行拥堵度判断
+测试抓取摄像头数据并进行拥挤度判断
 
 功能：
 1. 自动从2026年420台新购纯电动公交车辆信息表.csv中选择有成功爬取记录的车辆
 2. 一次性爬取该车辆的所有通道图片
-3. 对爬取的图片进行拥堵度判断
+3. 对爬取的图片进行拥挤度判断
 4. 输出详细的测试结果
 """
 
@@ -34,10 +34,10 @@ OUTPUT_ROOT = "collected"
 CH_LIST = [3, 4, 8, 12, 13, 19, 20]
 
 # 两次抓图请求之间的等待时间（秒）
-DELAY_SECONDS = 0.2
+DELAY_SECONDS = 0.01
 
 # 单次请求超时（秒）
-TIMEOUT_SECONDS = 2
+TIMEOUT_SECONDS = 1
 
 # 失败重试次数（不含首次请求）
 RETRY_TIMES = 0
@@ -291,9 +291,10 @@ def predict_crowd_level(image_paths):
         results = do_predict(view_model, crowd_models, view_results)
         
         # 建立图片路径到视角的映射
+        # view_results 是字典，结构: {view_label: {'path': ..., 'confidence': ...}}
         path_to_view = {}
-        for item in view_results:
-            path_to_view[item['path']] = item['view']
+        for view_label, item in view_results.items():
+            path_to_view[item['path']] = view_label
         
         return results, path_to_view, view_results
         
@@ -356,7 +357,7 @@ def save_log(plate, line, image_paths, results, path_to_view, overall_level):
     log_content.append("")
     
     # 记录整体判断结果
-    log_content.append("=== 整体拥堵度判断 ===")
+    log_content.append("=== 整体拥挤度判断 ===")
     log_content.append(f"  {overall_level}")
     log_content.append("")
     log_content.append(f"[{datetime.now()}] 执行完成")
@@ -391,13 +392,13 @@ def main():
     # 抓取该车辆的所有通道图片
     image_paths = crawl_vehicle_images(plate, line)
     
-    # 进行拥堵度判断
+    # 进行拥挤度判断
     if image_paths:
-        print("\n开始进行拥堵度判断...")
+        print("\n开始进行拥挤度判断...")
         results, path_to_view, view_results = predict_crowd_level(image_paths)
         
         # 输出判断结果
-        print("\n=== 拥堵度判断结果 ===")
+        print("\n=== 拥挤度判断结果 ===")
         print(f"results = {results}")
         print(f"path_to_view = {path_to_view}")
         print(f"view_results = {view_results}")
@@ -435,7 +436,7 @@ def main():
             overall_level = '未知'
             
             # 输出整体拥堵度判断
-            print(f"整体拥堵度判断: {overall_level}")
+            print(f"整体拥挤度判断: {overall_level}")
             
             # 保存日志
             save_log(plate, line, image_paths, results, path_to_view, overall_level)
@@ -444,7 +445,7 @@ def main():
         overall_level = '未知' if all_unknown else max_level
         
         # 只输出整体拥堵度判断
-        print(f"整体拥堵度判断: {overall_level}")
+        print(f"整体拥挤度判断: {overall_level}")
         
         # 保存日志
         save_log(plate, line, image_paths, results, path_to_view, overall_level)
