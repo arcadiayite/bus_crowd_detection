@@ -1,0 +1,15 @@
+# 数据文件
+*.csv
+*.png
+*.jpg
+*.jpeg
+*.log
+*.pptx
+*.docx
+*.json
+
+# 模型文件
+*.pt
+
+# 忽略 collected 目录（图片缓存）
+collected/
