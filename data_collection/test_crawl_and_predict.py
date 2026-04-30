@@ -37,7 +37,7 @@ CH_LIST = [3, 4, 8, 12, 13, 19, 20]
 DELAY_SECONDS = 0.01
 
 # 单次请求超时（秒）
-TIMEOUT_SECONDS = 1
+TIMEOUT_SECONDS = 2
 
 # 失败重试次数（不含首次请求）
 RETRY_TIMES = 0
